@@ -1,0 +1,41 @@
+    >>> from nodejobs.base import Connection
+
+    >>> conn = Connection(host='localhost', port=3000)
+
+    >>> int(conn.remove_all_jobs())
+    1
+
+    >>> ret = conn.post_job(
+    ...     name='test.with.linus',
+    ...     params={'name':'Linus', 'age':'2 months'},
+    ...     sender='python-nodejs-test',
+    ...     destinatary='python-nodejs-test',
+    ...     expire=None,
+    ...     key=None,
+    ... )
+
+    >>> ret.keys()
+    [u'status', u'name', u'assigned_by', u'when', u'response_message', u'destinatary', u'expire', u'params', u'key', u'_id', u'sender']
+
+    >>> ret2 = conn.get_jobs(name=ret['name'])
+
+    >>> len(ret2)
+    1
+
+    >>> ret.keys() == ret2[0].keys() and ret.values() == ret2[0].values()
+    True
+
+    >>> ret3 = conn.get_next_job()
+    >>> ret.keys() == ret3.keys() and ret.values() == ret3.values()
+    True
+
+    >>> conn.expire_jobs()
+    1
+
+    >>> ret4 = conn.update_job(ret['_id'], key='new-key')
+    >>> ret4['key'] == 'new-key'
+    True
+
+    >>> conn.delete_job(status=ret['status'])
+    1
+
