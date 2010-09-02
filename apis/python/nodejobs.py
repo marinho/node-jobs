@@ -106,3 +106,4 @@ class Connection(object):
         ret = unicode(self._get('/jobs/%s/update/'%msg_id, fields))
         return simplejson.loads(ret)
 
+
