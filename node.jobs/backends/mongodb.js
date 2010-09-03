@@ -53,6 +53,8 @@ exports.Backend = function(settings){
         post_job: function(attrs, callback){ // Callback function must be function(error, job)
             var self = this;
 
+            if (attrs.params) attrs.params = JSON.parse(attrs.params)
+
             this.get_collection(function(error, collection){
                 if (error) callback(error)
                 else {

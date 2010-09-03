@@ -31,6 +31,7 @@ class Connection(object):
 
     def _get(self, url, params=None):
         params['exclude_ids'] = ','.join(params.get('exclude_ids', []))
+        params['params'] = self._encode_json(params['params'])
 
         conn = self._get_connection()
         conn.request('GET', '%s?%s'%(url, params and self._encode_params(params) or ''))
@@ -55,9 +56,12 @@ class Connection(object):
 
         return resp.read()
 
+    def _encode_json(self, data):
+        return JSONEncoder().encode(data)
+   
     def _decode_response(self, data):
         return simplejson.loads(data)
-    
+     
     def remove_all_jobs(self):
         return unicode(self._get('/jobs/delete/', {'_all': True}))
 
@@ -111,5 +115,10 @@ class Connection(object):
         ret = unicode(self._get('/jobs/%s/update/'%msg_id, fields))
         return self._decode_response(ret)
 
-
+class JSONEncoder(simplejson.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, datetime.datetime):
+            return obj.strftime('%Y-%m-%d %H:%M:%S')
+        else:
+            return simplejson.JSONEncoder.default(self, obj)
 
