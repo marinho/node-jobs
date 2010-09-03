@@ -24,7 +24,8 @@ vows.describe('Node.JobS base').addBatch({
             var store = Store('mongodb', {db: 'node_jobs_test'});
 
             store.get_jobs({name: 'node_jobs.tests.check_something'}, function(res, jobs){
-                count_before = jobs.length;
+                store.close();
+/*                count_before = jobs.length;
 
                 store.post_job({
                     name: 'node_jobs.tests.check_something',
@@ -39,7 +40,7 @@ vows.describe('Node.JobS base').addBatch({
                             var cmp = count_after === count_before + 1;
                             //assert.isTrue(cmp);
                         });
-                });
+                });*/
             });
             }
     }

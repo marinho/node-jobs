@@ -15,10 +15,20 @@ exports.Backend = function(settings){
     return {
         _settings: settings,
 
+        close: function(callback){
+            this.db.close();
+            if (callback) callback();
+            sys.puts('XXXXXXXXXXX');
+        },
+
         get_collection: function(callback){ // Callback function must be function(error, collection)
             if (this.db === undefined) {
                 this.db = new MongoDB(this._settings.db, new MongoServer(this._settings.host, this._settings.port, {auto_reconnect: true}, {}));
                 this.db.open(function(){ /* Do nothing for a while */ });
+
+                this.db.addListener("close", function () {
+                    sys.puts("Closing connection!");
+                });
             }
 
             this.db.collection(this._settings.namespace, function(error, collection){
@@ -41,7 +51,7 @@ exports.Backend = function(settings){
                                 if (error) callback(error)
                                 else {
                                     callback(null, results)
-                                    self.db.close();
+                                    self.close();
                                 }
                             });
                         }
@@ -53,7 +63,7 @@ exports.Backend = function(settings){
         post_job: function(attrs, callback){ // Callback function must be function(error, job)
             var self = this;
 
-            if (attrs.params) attrs.params = JSON.parse(attrs.params)
+            if (attrs.params) attrs.params = JSON.parse(attrs.params);
 
             this.get_collection(function(error, collection){
                 if (error) callback(error)
@@ -61,7 +71,7 @@ exports.Backend = function(settings){
                     var job = attrs;
                     collection.insert([job], function(){
                         callback(null, job);
-                        self.db.close();
+                        self.close();
                     });
                 }
             });
@@ -94,7 +104,7 @@ exports.Backend = function(settings){
                                         if (error) callback(error)
                                         else {
                                             callback(null, results)
-                                            self.db.close();
+                                            self.close();
                                         }
                                     });
                                 }
@@ -115,7 +125,7 @@ exports.Backend = function(settings){
 
                     collection.remove(attrs, function(){
                         callback(null, 1); // FIXME
-                        self.db.close();
+                        self.close();
                     });
                 }
             });
@@ -135,7 +145,7 @@ exports.Backend = function(settings){
                         if (error) callback(error)
                         else {
                             callback(null, 1) // FIXME
-                            self.db.close();
+                            self.close();
                         }
                     });
                 }
@@ -161,7 +171,7 @@ exports.Backend = function(settings){
                                         if (error) callback(error)
                                         else {
                                             callback(null, results);
-                                            self.db.close();
+                                            self.close();
                                         }
                                     });
                                 }
