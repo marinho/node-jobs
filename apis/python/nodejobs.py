@@ -31,7 +31,9 @@ class Connection(object):
 
     def _get(self, url, params=None):
         params['exclude_ids'] = ','.join(params.get('exclude_ids', []))
-        params['params'] = self._encode_json(params['params'])
+
+        if params.get('params', None):
+            params['params'] = self._encode_json(params['params'])
 
         conn = self._get_connection()
         conn.request('GET', '%s?%s'%(url, params and self._encode_params(params) or ''))
