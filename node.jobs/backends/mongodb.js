@@ -28,6 +28,9 @@ exports.Backend = function(settings){
         },
 
         get_jobs: function(attrs, callback){ // Callback function must be function(error, list)
+            var self = this;
+            var attrs = this.process_attrs(attrs);
+
             this.get_collection(function(error, collection){
                 if (error) callback(error)
                 else {
@@ -36,7 +39,10 @@ exports.Backend = function(settings){
                         else {
                             cursor.toArray(function(error, results){
                                 if (error) callback(error)
-                                else callback(null, results)
+                                else {
+                                    callback(null, results)
+                                    self.db.close();
+                                }
                             });
                         }
                     });
@@ -45,18 +51,34 @@ exports.Backend = function(settings){
         },
 
         post_job: function(attrs, callback){ // Callback function must be function(error, job)
+            var self = this;
+
             this.get_collection(function(error, collection){
                 if (error) callback(error)
                 else {
                     var job = attrs;
                     collection.insert([job], function(){
                         callback(null, job);
+                        self.db.close();
                     });
                 }
             });
         },
 
+        process_attrs: function(attrs){
+            if ('exclude_ids' in attrs) {
+                if (attrs.exclude_ids) attrs['_id'] = {'$nin': attrs.exclude_ids.split(',')};
+
+                delete attrs.exclude_ids;
+            }
+
+            return attrs;
+        },
+
         get_next_job: function(attrs, callback){
+            var self = this;
+            var attrs = this.process_attrs(attrs);
+
             this.get_collection(function(error, collection){
                 if (error) callback(error)
                 else {
@@ -68,7 +90,10 @@ exports.Backend = function(settings){
                                 else {
                                     cursor.toArray(function(error, results){
                                         if (error) callback(error)
-                                        else callback(null, results)
+                                        else {
+                                            callback(null, results)
+                                            self.db.close();
+                                        }
                                     });
                                 }
                             });
@@ -79,6 +104,8 @@ exports.Backend = function(settings){
         },
 
         delete_jobs: function(attrs, callback){
+            var self = this;
+
             this.get_collection(function(error, collection){
                 if (error) callback(error)
                 else {
@@ -86,12 +113,15 @@ exports.Backend = function(settings){
 
                     collection.remove(attrs, function(){
                         callback(null, 1); // FIXME
+                        self.db.close();
                     });
                 }
             });
         },
 
         expire_jobs: function(attrs, callback){
+            var self = this;
+
             this.get_collection(function(error, collection){
                 if (error) callback(error)
                 else {
@@ -101,13 +131,18 @@ exports.Backend = function(settings){
 
                     collection.update(attrs, new_values, function(error, res){
                         if (error) callback(error)
-                        else callback(null, 1) // FIXME
+                        else {
+                            callback(null, 1) // FIXME
+                            self.db.close();
+                        }
                     });
                 }
             })
         },
 
         update_job: function(job_id, attrs, callback){
+            var self = this;
+
             this.get_collection(function(error, collection){
                 if (error) callback(error)
                 else {
@@ -122,7 +157,10 @@ exports.Backend = function(settings){
                                 else {
                                     cursor.toArray(function(error, results){
                                         if (error) callback(error)
-                                        else callback(null, results)
+                                        else {
+                                            callback(null, results);
+                                            self.db.close();
+                                        }
                                     });
                                 }
                             });

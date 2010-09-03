@@ -18,7 +18,7 @@ class Connection(object):
 
         return cls._singleton
 
-    def __init__(self, host='localhost', port=3000, default_sender=None):
+    def __init__(self, host='localhost', port=3000, default_sender=None, user=None, password=None):
         self.host = host
         self.port = port
         self.default_sender = default_sender
@@ -30,6 +30,8 @@ class Connection(object):
         return urllib.urlencode(dict([(k,v) for k,v in params.items() if v is not None]))
 
     def _get(self, url, params=None):
+        params['exclude_ids'] = ','.join(params.get('exclude_ids', []))
+
         conn = self._get_connection()
         conn.request('GET', '%s?%s'%(url, params and self._encode_params(params) or ''))
 
@@ -52,6 +54,9 @@ class Connection(object):
         resp = conn.getresponse()
 
         return resp.read()
+
+    def _decode_response(self, data):
+        return simplejson.loads(data)
     
     def remove_all_jobs(self):
         return unicode(self._get('/jobs/delete/', {'_all': True}))
@@ -73,16 +78,16 @@ class Connection(object):
             }
 
         ret = unicode(self._get('/jobs/post/', obj))
-        return simplejson.loads(ret)
+        return self._decode_response(ret)
 
     def get_jobs(self, **kwargs):
         ret = unicode(self._get('/jobs/', kwargs))
-        return simplejson.loads(ret)
+        return self._decode_response(ret)
 
     def get_next_job(self, **kwargs):
         kwargs.setdefault('status', JOB_STATUS_STANDING)
         ret = unicode(self._get('/jobs/next/', kwargs))
-        return simplejson.loads(ret)
+        return self._decode_response(ret)
 
     def delete_job(self, msg_id=None, key=None, status=None):
         if key is not None:
@@ -96,14 +101,15 @@ class Connection(object):
             where['status'] = status
 
         ret = unicode(self._get('/jobs/delete/', where))
-        return simplejson.loads(ret)
+        return self._decode_response(ret)
 
     def expire_jobs(self):
         ret = unicode(self._get('/jobs/expire/'))
-        return simplejson.loads(ret)
+        return self._decode_response(ret)
     
     def update_job(self, msg_id, **fields):
         ret = unicode(self._get('/jobs/%s/update/'%msg_id, fields))
-        return simplejson.loads(ret)
+        return self._decode_response(ret)
+
 
 
