@@ -15,33 +15,28 @@ exports.Backend = function(settings){
     return {
         _settings: settings,
 
-        close: function(callback){
-            this.db.close();
-            if (callback) callback();
-            sys.puts('XXXXXXXXXXX');
+        open: function(callback){
+            var db = new MongoDB(this._settings.db, new MongoServer(this._settings.host, this._settings.port, {auto_reconnect: true}, {}));
+            db.open(callback);
         },
 
-        get_collection: function(callback){ // Callback function must be function(error, collection)
-            if (this.db === undefined) {
-                this.db = new MongoDB(this._settings.db, new MongoServer(this._settings.host, this._settings.port, {auto_reconnect: true}, {}));
-                this.db.open(function(){ /* Do nothing for a while */ });
+        close: function(callback){
+            //this.db.close();
+            if (callback) callback();
+        },
 
-                this.db.addListener("close", function () {
-                    sys.puts("Closing connection!");
-                });
-            }
-
-            this.db.collection(this._settings.namespace, function(error, collection){
+        get_collection: function(db, callback){ // Callback function must be function(error, collection)
+            db.collection(this._settings.namespace, function(error, collection){
                 if (error) callback(error)
                 else callback(null, collection);
             });
         },
 
-        get_jobs: function(attrs, callback){ // Callback function must be function(error, list)
+        get_jobs: function(db, attrs, callback){ // Callback function must be function(error, list)
             var self = this;
             var attrs = this.process_attrs(attrs);
 
-            this.get_collection(function(error, collection){
+            this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     collection.find(attrs, function(error, cursor){
@@ -60,12 +55,12 @@ exports.Backend = function(settings){
             })
         },
 
-        post_job: function(attrs, callback){ // Callback function must be function(error, job)
+        post_job: function(db, attrs, callback){ // Callback function must be function(error, job)
             var self = this;
 
             if (attrs.params) attrs.params = JSON.parse(attrs.params);
 
-            this.get_collection(function(error, collection){
+            this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     var job = attrs;
@@ -87,11 +82,11 @@ exports.Backend = function(settings){
             return attrs;
         },
 
-        get_next_job: function(attrs, callback){
+        get_next_job: function(db, attrs, callback){
             var self = this;
             var attrs = this.process_attrs(attrs);
 
-            this.get_collection(function(error, collection){
+            this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     collection.find(attrs, {'sort': 'when'}, function(error, cursor){
@@ -115,10 +110,10 @@ exports.Backend = function(settings){
             })
         },
 
-        delete_jobs: function(attrs, callback){
+        delete_jobs: function(db, attrs, callback){
             var self = this;
 
-            this.get_collection(function(error, collection){
+            this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     if (attrs['_all']) attrs = {}
@@ -131,10 +126,10 @@ exports.Backend = function(settings){
             });
         },
 
-        expire_jobs: function(attrs, callback){
+        expire_jobs: function(db, attrs, callback){
             var self = this;
 
-            this.get_collection(function(error, collection){
+            this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     attrs['expire'] = {'$lt': new Date()};
@@ -152,10 +147,10 @@ exports.Backend = function(settings){
             })
         },
 
-        update_job: function(job_id, attrs, callback){
+        update_job: function(db, job_id, attrs, callback){
             var self = this;
 
-            this.get_collection(function(error, collection){
+            this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     var conditions = {_id: ObjectID.createFromHexString(job_id)};

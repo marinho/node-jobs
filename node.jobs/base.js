@@ -23,39 +23,44 @@ exports.Store = function(backend, settings){
         _settings: settings,
         _backend: backend_class,
 
+        open: function(callback){
+            if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
+            return this._backend_object.open(callback);
+        },
+
         close: function(callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
             return this._backend_object.close(callback);
         },
 
-        get_jobs: function(attrs, callback){
+        get_jobs: function(db, attrs, callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.get_jobs(attrs, callback);
+            return this._backend_object.get_jobs(db, attrs, callback);
         },
 
-        post_job: function(attrs, callback){
+        post_job: function(db, attrs, callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.post_job(attrs, callback);
+            return this._backend_object.post_job(db, attrs, callback);
         },
 
-        get_next_job: function(attrs, callback){
+        get_next_job: function(db, attrs, callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.get_next_job(attrs, callback);
+            return this._backend_object.get_next_job(db, attrs, callback);
         },
 
-        delete_jobs: function(attrs, callback){
+        delete_jobs: function(db, attrs, callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.delete_jobs(attrs, callback);
+            return this._backend_object.delete_jobs(db, attrs, callback);
         },
 
-        expire_jobs: function(attrs, callback){
+        expire_jobs: function(db, attrs, callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.expire_jobs(attrs, callback);
+            return this._backend_object.expire_jobs(db, attrs, callback);
         },
 
-        update_job: function(job_id, attrs, callback){
+        update_job: function(db, job_id, attrs, callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.update_job(job_id, attrs, callback);
+            return this._backend_object.update_job(db, job_id, attrs, callback);
         }
     }
 }
