@@ -124,3 +124,45 @@ class JSONEncoder(simplejson.JSONEncoder):
         else:
             return simplejson.JSONEncoder.default(self, obj)
 
+try:
+    from django.dispatch import Signal
+
+    class DoesNotUpdateStatus(Exception): pass
+
+    execute_job = Signal(providing_args=['connection','message'])
+
+    def signal_for_jobs(**conditions):
+        """Returns a signal function that will run only if the message matches with conditions given"""
+
+        def _wrapper(func):
+            def _inner(sender, connection, message, *args, **kwargs):
+                # Checks for conditions
+                for k,v in conditions.items():
+                    if message.get(k, None) != v:
+                        return
+
+                # Update message to set it as assigned
+                if message['status'] == JOB_STATUS_STANDING:
+                    connection.update_job(message['_id'], status=JOB_STATUS_ASSIGNED)
+
+                ret = None
+
+                # Execute the decorated function
+                try:
+                    ret = func(sender, connection, message, *args, **kwargs)
+                except DoesNotUpdateStatus:
+                    pass
+                except Exception, e:
+                    # Update message to set it as failed
+                    connection.update_job(message['_id'], status=JOB_STATUS_FAILED, error='%s: %s'%(e.__class__.__name__, unicode(e)))
+                else:
+                    # Update message to set it as done
+                    connection.update_job(message['_id'], status=JOB_STATUS_DONE)
+
+                return ret
+            return _inner
+
+        return _wrapper
+except ImportError:
+    pass
+
