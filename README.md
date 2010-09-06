@@ -36,3 +36,9 @@ theirselves their jobs and returning results to senders.
 Just make an instance of Connection class and call its methods. When instancing it, you must
 set its host and port, and set the sender key too, if it has one.
 
+## To do
+
+- To support callback and WebSockets, this will help us to have faster and lite services
+- To improve our tests. Their were enought for development but aren't for maintainence
+- Auto-remover for done jobs after expiration time
+
