@@ -3,7 +3,7 @@ var
 
 var BACKENDS = {
     'mongodb': require('../node.jobs/backends/mongodb'),
-    'redis': require('../node.jobs/backends/redis')
+    //'redis': require('../node.jobs/backends/redis')
 }
 
 exports.Store = function(backend, settings){
