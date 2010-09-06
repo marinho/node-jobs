@@ -1,6 +1,5 @@
 var
  sys = require('sys'),
- kiwi = require('kiwi'),
 
  MongoDB = require('mongodb/db').Db,
  MongoServer = require('mongodb/connection').Server,

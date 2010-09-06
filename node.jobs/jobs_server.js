@@ -1,6 +1,5 @@
 var
  sys = require('sys'),
- kiwi = require('kiwi'),
  express = require('express'),
 
  base = require('../node.jobs/base'),

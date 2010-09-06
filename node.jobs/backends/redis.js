@@ -1,7 +1,6 @@
 var
  sys = require('sys'),
- kiwi = require('kiwi'),
- redis = kiwi.require("redis-client");
+ redis = require("redis-client");
 
 exports.Backend = function(settings){
     settings.port = settings.port !== undefined ? settings.port : '6379';
