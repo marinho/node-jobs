@@ -1,0 +1,24 @@
+#! /bin/sh
+
+CUR_DIR=$PWD
+PID_FILE="$CUR_DIR/node.pid"
+NODE_JOBS_FILE="/usr/local/node.jobs/jobs_server.js"
+
+if [ $1 = "start" ]; then
+	if [ -e $PID_FILE ]; then
+		echo "Node.js is already running."
+	else
+		echo "Starting Node.Jobs Server"
+		(node $NODE_JOBS_FILE &) >> /var/logs/node.jobs/access.log && ps -C node | cut -d"
+" -f 2 | cut -d" " -f 1 > $PID_FILE
+	fi
+elif [ $1 = "stop" ]; then
+	if [ ! -e $PID_FILE ]; then
+		echo "Node.js is not running."
+	else
+		echo "Stopping Node.Jobs Server"
+		kill `cat $PID_FILE`
+		rm -rf $PID_FILE
+	fi
+fi
+
