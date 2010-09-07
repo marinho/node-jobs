@@ -10,7 +10,8 @@ case "$1" in
 		echo "Node.js is already running."
 	else
 		echo "Starting Node.Jobs Server"
-		(sudo -u www-data node $NODE_JOBS_FILE >> /var/log/node.jobs/access.log &) && ps -C node | cut -d"" -f 2 | cut -d" " -f 1 > $PID_FILE
+		(sudo -u www-data node $NODE_JOBS_FILE >> /var/log/node.jobs/access.log &) && ps -C node | cut -d"
+" -f 2 | cut -d" " -f 1 > $PID_FILE
 	fi
         ;;
     stop)
