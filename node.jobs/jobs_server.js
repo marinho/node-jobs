@@ -40,7 +40,10 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
         // VIEWS
         var views = {
             home: function(req, res){
-                res.send('x');
+                res.writeHead(200, {'Content-Type': 'text/html'});
+                fs.readFile(__dirname+'/views/index.html', function(error, content){
+                    res.end(content);
+                });
             },
 
             jobs_post: function(req, res){

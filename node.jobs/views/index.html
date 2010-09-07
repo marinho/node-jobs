@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link href='http://fonts.googleapis.com/css?family=Yanone+Kaffeesatz' rel='stylesheet' type='text/css'>
+        <style>
+            body {
+                background: #eee;
+                font-family: arial, helvetica, sans-serif;
+                margin: 100px;
+            }
+            .all {
+                position: relative;
+                width: 600px;
+                margin: auto auto;
+                background: white;
+                border-style: solid;
+                border-color: silver;
+                border-width: 1px;
+                overflow: hidden;
+            }
+            header {
+                overflow: hidden;
+                display: block;
+            }
+            header .inner {
+                overflow: hidden;
+            }
+            .mark {
+                font-family: 'Yanone Kaffeesatz', arial, serif; font-size: 50pt;
+                float: left;
+                display: block;
+                padding: 0 0.2em 0.15em 0.2em;
+                margin: 10px;
+                background-color: #f4eed7;
+                border-radius: 0.3em;
+                -moz-border-radius: 0.3em;
+                -webkit-border-radius: 0.3em;
+                -o-border-radius: 0.3em;
+            }
+            .mark-node {
+                color: #aad400;
+            }
+            .mark-dot {
+
+            }
+            .mark-jobs {
+                color: #c83737;
+            }
+            .content {
+                margin: 20px 10px 20px 10px;
+            }
+            footer {
+                font-size: 0.8em;
+                text-align: center;
+                color: gray;
+                margin: 15px 0 5px 0;
+            }
+        </style>
+    </head>
+
+    <div class="all">
+        <header>
+            <div class="inner">
+                <span class="mark"><span class="mark-node">node</span><span class="mark-dot">.</span><span class="mark-jobs">jobs</span></span>
+            </div>
+        </header>
+
+        <section class="content">
+            <p>
+            This is a jobs server on <b>node.jobs</b>, a queueing messages server powered by
+            <a href="http://nodejs.org/">Node.js</a>,
+            <a href="http://expressjs.com/">ExpressJS</a>,
+            <a href="http://mongodb.org/">MongoDB</a> and
+            <a href="http://code.google.com/p/v8/">Google V8</a>.
+            </p>
+            <p>
+            The official website and source code are on
+            <a href="http://github.com/marinho/node-jobs">http://github.com/marinho/node-jobs</a>
+            </p>
+        </section>
+
+        <footer>
+            Copyright 2010 Marinho Brandao. Software licensed under LGPL - Lesser Gnu Public License.
+        </footer>
+    </div>
+</html>
