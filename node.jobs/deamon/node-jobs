@@ -9,7 +9,7 @@ if [ $1 = "start" ]; then
 		echo "Node.js is already running."
 	else
 		echo "Starting Node.Jobs Server"
-		(node $NODE_JOBS_FILE &) >> /var/logs/node.jobs/access.log && ps -C node | cut -d"
+		(node $NODE_JOBS_FILE &) >> /var/log/node.jobs/access.log && ps -C node | cut -d"
 " -f 2 | cut -d" " -f 1 > $PID_FILE
 	fi
 elif [ $1 = "stop" ]; then
