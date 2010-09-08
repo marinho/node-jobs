@@ -50,5 +50,5 @@ set its host and port, and set the sender key too, if it has one.
 - To define a default port instead of 3000
 - setup.py on Python wrapper
 - Maybe a kiwi/npm installer
-- Deamon script to work on server
+- Make expiration work
 
