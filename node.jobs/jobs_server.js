@@ -2,6 +2,7 @@ var
  sys = require('sys'),
  fs = require('fs'),
  express = require('express'),
+ ws = require('ws'),
 
  base = require('../node.jobs/base'),
  flags = require('../node.jobs/base');
@@ -36,6 +37,10 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
         var app = express.createServer();
         app.use(express.bodyDecoder());
         if (settings.output_log) app.use(express.logger());
+
+        // Websocket attacher
+        app.websocket = function(path, fn){
+        }
 
         // VIEWS
         var views = {
@@ -102,6 +107,15 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
 
             static_serve: function(req, res){
                 res.sendfile(__dirname + '/media/' + req.params[0]);
+            },
+
+            jobs_ws: function(conn){
+                conn.send('Just testing: '+conn.id);
+                sys.puts('x'); sys.puts('Received connection: '+conn.id);
+
+                conn.addListener('message', function(msg){
+                    sys.puts('x'); sys.puts('Received message from '+conn.id+': '+msg);
+                });
             }
         }
 
@@ -114,11 +128,9 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
         app.get('/jobs/next/', views.jobs_get_next);
         app.get('/jobs/expire/', views.jobs_expire); // FIXME: method should be post
         app.get('/jobs/:id/update/', views.jobs_update); // FIXME: method should be post
-        //app.del('/jobs/', views.jobs_delete);
+        app.websocket('/jobs/ws/', views.jobs_ws);
 
         app.listen(settings.port);
-
     });
-
 });
 
