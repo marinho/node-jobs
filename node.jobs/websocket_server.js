@@ -62,6 +62,7 @@ var methods = {
                         //broadcast
                     });
                 }
+    //assign_job
 }
 
 read_settings(file_conf, function(error, file_settings){
