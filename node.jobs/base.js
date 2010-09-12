@@ -1,5 +1,7 @@
 var
- sys = require('sys');
+ sys = require('sys'),
+
+ default_job_fields = require('../node.jobs/common').default_job_fields;
 
 var BACKENDS = {
     'mongodb': require('../node.jobs/backends/mongodb'),
@@ -28,19 +30,23 @@ exports.Store = function(backend, settings){
             return this._backend_object.open(callback);
         },
 
-        close: function(callback){
-            if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.close(callback);
-        },
-
         get_jobs: function(db, attrs, callback){
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
             return this._backend_object.get_jobs(db, attrs, callback);
         },
 
         post_job: function(db, attrs, callback){
+
+            var fields = {};
+
+            for (var k in default_job_fields) {
+                val = attrs[k];
+                if (val !== undefined) fields[k] = val
+                else fields[k] = default_job_fields[k]
+            }
+
             if (this._backend_object === undefined) this._backend_object = this._backend(this._settings);
-            return this._backend_object.post_job(db, attrs, callback);
+            return this._backend_object.post_job(db, fields, callback);
         },
 
         get_next_job: function(db, attrs, callback){

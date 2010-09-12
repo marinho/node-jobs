@@ -4,7 +4,6 @@ var
  ws = require('ws'),
 
  base = require('../node.jobs/base'),
- flags = require('../node.jobs/base'),
  read_settings = require('../node.jobs/common').read_settings,
  default_settings = require('../node.jobs/common').default_settings,
  file_conf = require('../node.jobs/common').file_conf,

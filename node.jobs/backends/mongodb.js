@@ -5,7 +5,8 @@ var
  MongoServer = require('mongodb/connection').Server,
  ObjectID = require('mongodb/bson/bson').ObjectID,
 
- flags = require('../flags');
+ flags = require('../flags'),
+ process_date = require('../common').process_date;
 
 exports.Backend = function(settings){
     settings.port = settings.port !== undefined ? settings.port : 27017;
@@ -15,13 +16,9 @@ exports.Backend = function(settings){
         _settings: settings,
 
         open: function(callback){
-            var db = new MongoDB(this._settings.db, new MongoServer(this._settings.host, this._settings.port, {auto_reconnect: true}, {}));
+            var db = new MongoDB(this._settings.db, new MongoServer(this._settings.host,
+                this._settings.port, {auto_reconnect: true}, {}));
             db.open(callback);
-        },
-
-        close: function(callback){
-            //this.db.close();
-            if (callback) callback();
         },
 
         get_collection: function(db, callback){ // Callback function must be function(error, collection)
@@ -43,10 +40,7 @@ exports.Backend = function(settings){
                         else {
                             cursor.toArray(function(error, results){
                                 if (error) callback(error)
-                                else {
-                                    callback(null, results)
-                                    self.close();
-                                }
+                                else callback(null, results)
                             });
                         }
                     });
@@ -55,17 +49,18 @@ exports.Backend = function(settings){
         },
 
         post_job: function(db, attrs, callback){ // Callback function must be function(error, job)
-            var self = this;
+            if (typeof attrs.params === 'string') attrs.params = JSON.parse(attrs.params);
 
-            if (typeof attrs.params === String) attrs.params = JSON.parse(attrs.params);
+            attrs.when = process_date(attrs.when, true);
+            attrs.expire = process_date(attrs.expire);
 
             this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     var job = attrs;
+
                     collection.insert([job], function(){
                         callback(null, job);
-                        self.close();
                     });
                 }
             });
@@ -96,10 +91,7 @@ exports.Backend = function(settings){
                                 else {
                                     cursor.toArray(function(error, results){
                                         if (error) callback(error)
-                                        else {
-                                            callback(null, results)
-                                            self.close();
-                                        }
+                                        else callback(null, results)
                                     });
                                 }
                             });
@@ -110,16 +102,14 @@ exports.Backend = function(settings){
         },
 
         delete_jobs: function(db, attrs, callback){
-            var self = this;
-
             this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
                     if (attrs['_all']) attrs = {}
 
-                    collection.remove(attrs, function(){
-                        callback(null, 1); // FIXME
-                        self.close();
+                    collection.remove(attrs, function(error){
+                        if (error) callback(error)
+                        else callback(null, true);
                     });
                 }
             });
@@ -137,10 +127,7 @@ exports.Backend = function(settings){
 
                     collection.update(attrs, new_values, function(error, res){
                         if (error) callback(error)
-                        else {
-                            callback(null, 1) // FIXME
-                            self.close();
-                        }
+                        else callback(null, true)
                     });
                 }
             })
@@ -152,7 +139,7 @@ exports.Backend = function(settings){
             this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
-                    var conditions = {_id: ObjectID.createFromHexString(job_id)};
+                    var conditions = {_id: job_id};
                     var new_values = {'$set': attrs};
 
                     collection.update(conditions, new_values, function(error, job){
@@ -163,10 +150,7 @@ exports.Backend = function(settings){
                                 else {
                                     cursor.toArray(function(error, results){
                                         if (error) callback(error)
-                                        else {
-                                            callback(null, results);
-                                            self.close();
-                                        }
+                                        else callback(null, results);
                                     });
                                 }
                             });

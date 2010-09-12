@@ -4,11 +4,9 @@ var
  express = require('express'),
 
  base = require('../node.jobs/base'),
- flags = require('../node.jobs/base'),
  read_settings = require('../node.jobs/common').read_settings,
  default_settings = require('../node.jobs/common').default_settings,
- file_conf = require('../node.jobs/common').file_conf,
- default_job_fields = require('../node.jobs/common').default_job_fields;
+ file_conf = require('../node.jobs/common').file_conf;
 
 read_settings(file_conf, function(error, file_settings){
     // Load settings from configuration file
@@ -35,15 +33,7 @@ read_settings(file_conf, function(error, file_settings){
             },
 
             jobs_post: function(req, res){
-                var fields = {};
-
-                for (var k in default_job_fields) {
-                    val = req.param(k);
-                    if (val !== undefined) fields[k] = val
-                    else fields[k] = default_job_fields
-                }
-
-                store.post_job(db, fields, function(error, job){
+                store.post_job(db, req.query, function(error, job){
                     res.send(JSON.stringify(job));
                 });
             },
@@ -81,17 +71,6 @@ read_settings(file_conf, function(error, file_settings){
 
             static_serve: function(req, res){
                 res.sendfile(__dirname + '/media/' + req.params[0]);
-            },
-
-            jobs_ws: function(req, res){ // conn){
-                sys.puts(JSON.stringify(req.headers));
-                res.send('x')
-                /*conn.send('Just testing: '+conn.id);
-                sys.puts('x'); sys.puts('Received connection: '+conn.id);
-
-                conn.addListener('message', function(msg){
-                    sys.puts('x'); sys.puts('Received message from '+conn.id+': '+msg);
-                });*/
             }
         }
 
