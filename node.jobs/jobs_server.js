@@ -33,6 +33,9 @@ read_settings(file_conf, function(error, file_settings){
             },
 
             jobs_post: function(req, res){
+                sys.puts('xxxxxxxx');
+                sys.puts(JSON.stringify(req.query));
+                sys.puts('xxxxxxxx');
                 store.post_job(db, req.query, function(error, job){
                     res.send(JSON.stringify(job));
                 });
