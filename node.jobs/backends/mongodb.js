@@ -68,7 +68,13 @@ exports.Backend = function(settings){
 
         process_attrs: function(attrs){
             if ('exclude_ids' in attrs) {
-                if (attrs.exclude_ids) attrs['_id'] = {'$nin': attrs.exclude_ids.split(',')};
+                if (attrs.exclude_ids) {
+                    var list = attrs.exclude_ids.split(',');
+                    var ids = [];
+                    for (var i=0; i<list.length; i++) ids.push(new ObjectID(list[i]))
+
+                    attrs['_id'] = {'$nin': ids};
+                }
 
                 delete attrs.exclude_ids;
             }
