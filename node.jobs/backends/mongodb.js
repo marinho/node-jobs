@@ -112,6 +112,7 @@ exports.Backend = function(settings){
                 if (error) callback(error)
                 else {
                     if (attrs['_all']) attrs = {}
+                    else if (attrs['_id'] !== undefined) attrs['_id'] = new ObjectID(attrs['_id']);
 
                     collection.remove(attrs, function(error){
                         if (error) callback(error)

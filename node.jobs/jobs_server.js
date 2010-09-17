@@ -33,9 +33,6 @@ read_settings(file_conf, function(error, file_settings){
             },
 
             jobs_post: function(req, res){
-                sys.puts('xxxxxxxx');
-                sys.puts(JSON.stringify(req.query));
-                sys.puts('xxxxxxxx');
                 store.post_job(db, req.query, function(error, job){
                     res.send(JSON.stringify(job));
                 });
@@ -55,8 +52,8 @@ read_settings(file_conf, function(error, file_settings){
             },
 
             jobs_delete: function(req, res){
-                store.delete_jobs(db, req.query, function(error, count){
-                    res.send(JSON.stringify(count));
+                store.delete_jobs(db, req.query, function(error, deleted){
+                    res.send(JSON.stringify(deleted));
                 });
             },
 

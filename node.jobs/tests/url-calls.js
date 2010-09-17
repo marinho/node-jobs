@@ -17,30 +17,18 @@ var CHARS = {
     '^':'5E','~':'7E','\\[':'5B','\\]':'5D','`':'60'
 };
 
-function encode_url(word){
-    for (var ch in CHARS) {
-        while (word.indexOf(ch) >= 0) word = word.replace(ch, '%'+CHARS[ch]);
-    }
-
-    return word;
-}
-
 function encode_vars(dict){
     var ret = '';
 
     for (var key in dict) {
         var value = dict[key];
 
-        if (typeof value === 'object') value = encode_url(JSON.stringify(value));
+        if (typeof value === 'object') value = escape(JSON.stringify(value));
 
         ret += key + '=' + value + '&';
     }
 
-    ret = ret ? '?'+ret : ret;
-
-    sys.puts(ret);
-
-    return ret;
+    return ret ? '?'+ret : ret;
 }
 
 vows.describe('Node.JobS HTTP URL methods').addBatch({
@@ -56,19 +44,49 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
                     });
                 });
             },
-        'Post job': function(){
+        'Post job, get it, delete and check deleted': function(){
             var vars = encode_vars({
-                'name': 'testing-from-url',
+                'name': 'testing-on-url-calls',
                 'params': {something: 'some value', other_field: 'other thing'},
                 })
 
-
-            var req = cl.request('GET', '/jobs/post/'+vars, {});
-            req.end();
+            var req = cl.request('GET', '/jobs/post/'+vars, {}); req.end();
             req.on('response', function(resp){
                 assert.equal(resp.statusCode, 200);
                 resp.on('data', function(content){
-                    //sys.puts(content);
+                    var job = JSON.parse(content);
+                    assert.equal(job['name'], 'testing-on-url-calls');
+
+                    // Gets the job
+                    var vars = encode_vars({'_id': job['_id']})
+                    var req2 = cl.request('GET', '/jobs/'+vars, {}); req2.end();
+                    req2.on('response', function(resp2){
+                        assert.equal(resp2.statusCode, 200);
+
+                        resp2.on('data', function(content2){
+                            var job2 = JSON.parse(content);
+                            assert.equal(job['_id'], job2['_id']);
+
+                            // Requests job deletion
+                            var req3 = cl.request('GET', '/jobs/delete/'+vars, {}); req3.end();
+                            req3.on('response', function(resp3){
+                                assert.equal(resp3.statusCode, 200);
+                                resp3.on('data', function(deleted){
+                                    assert.equal(deleted, 'true');
+
+                                    // Gets the job again to check it has been deleted
+                                    var req4 = cl.request('GET', '/jobs/'+vars, {}); req4.end();
+                                    req4.on('response', function(resp4){
+                                        assert.equal(resp4.statusCode, 200);
+
+                                        resp4.on('data', function(content4){
+                                            assert.equal(content4, '[]');
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
                     });
                 });
             },
