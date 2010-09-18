@@ -44,6 +44,17 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
                     });
                 });
             },
+        'Static file': function(){
+            var req = cl.request('GET', '/media/css/base.css', {});
+            req.end();
+            req.on('response', function(resp){
+                assert.equal(resp.statusCode, 200);
+                resp.on('data', function(content){
+                    content = ''+content;
+                    assert.ok(content.match(/.*?(font-family).*/));
+                    });
+                });
+            },
         'Post job, get it, delete and check deleted': function(){
             var vars = encode_vars({
                 'name': 'testing-on-url-calls',
@@ -179,8 +190,6 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
                 });
             },
         'Update/Change job': function(){
-            },
-        'Static file': function(){
             }
         }
     }).run();
