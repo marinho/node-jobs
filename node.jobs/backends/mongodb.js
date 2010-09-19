@@ -79,6 +79,10 @@ exports.Backend = function(settings){
                 delete attrs.exclude_ids;
             }
 
+            if ('_id' in attrs) {
+                attrs['_id'] = ObjectID(attrs['_id']);
+            }
+
             return attrs;
         },
 
@@ -146,7 +150,7 @@ exports.Backend = function(settings){
             this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
-                    var conditions = {_id: job_id};
+                    var conditions = {_id: ObjectID(job_id)};
                     var new_values = {'$set': attrs};
 
                     collection.update(conditions, new_values, function(error, job){

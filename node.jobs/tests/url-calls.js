@@ -190,6 +190,52 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
                 });
             },
         'Update/Change job': function(){
+            var vars = encode_vars({
+                'name': 'testing-job-changed',
+                'params': {something: 'some value', other_field: 'other thing'}
+                });
+
+            // Posts a new job
+            var req = cl.request('GET', '/jobs/post/'+vars, {}); req.end();
+            req.on('response', function(resp){
+                assert.equal(resp.statusCode, 200);
+
+                resp.on('data', function(content){
+                    var job = JSON.parse(content);
+
+                    // Modifying the job posted
+                    var vars = encode_vars({'status': 'failed'});
+                    var req2 = cl.request('GET', '/jobs/'+job['_id']+'/update/'+vars, {}); req2.end();
+                    req2.on('response', function(resp2){
+                        assert.equal(resp2.statusCode, 200);
+                        resp2.on('data', function(content2){
+                            var job2 = JSON.parse(content2);
+                            assert.equal(job['_id'], job2['_id']);
+                            assert.equal(job2['status'], 'failed');
+
+                            // Gets the job again to check it has been expired
+                            var req3 = cl.request('GET', '/jobs/?_id='+job['_id'], {}); req3.end();
+                            req3.on('response', function(resp3){
+                                assert.equal(resp3.statusCode, 200);
+
+                                resp3.on('data', function(content3){
+                                    var job3 = JSON.parse(content3)[0];
+                                    assert.equal(job2['_id'], job3['_id']);
+                                    assert.equal(job3['status'], 'failed');
+
+                                    var req4 = cl.request('GET', '/jobs/delete/?name='+job['name'], {}); req4.end();
+                                    req4.on('response', function(resp4){
+                                        assert.equal(resp4.statusCode, 200);
+                                        resp4.on('data', function(deleted){
+                                            assert.equal(deleted, 'true');
+                                            });
+                                        });
+                                    });
+                                });
+                            });
+                        });
+                    });
+                });
             }
         }
     }).run();
