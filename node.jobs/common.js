@@ -18,6 +18,7 @@ exports.default_settings = {
     store_backend: 'mongodb',
     store_database: 'node_jobs',
     service_port: 3000,
+    websockets_port: 3001,
     output_log: true
 }
 

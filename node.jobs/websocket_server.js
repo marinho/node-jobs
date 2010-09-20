@@ -100,7 +100,7 @@ read_settings(file_conf, function(error, file_settings){
           //server.broadcast("<"+conn.id+"> disconnected");
         });
 
-        server.listen(settings.service_port);
+        server.listen(settings.websockets_port);
     });
 });
 

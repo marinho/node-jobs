@@ -6,17 +6,6 @@ var
 
 var cl = http.createClient(3000, 'localhost');
 
-var CHARS = {
-    // Reserved characters
-    '$':'24','&':'26','\\+':'2B',',':'2C','/':'2F',
-    ':':'3A',';':'3B','=':'3D','\\?':'3F','@':'40',
-
-    // Unsafe characters
-    ' ':'20','"':'22','<':'3C','>':'3E','#':'23',
-    '%':'25','{':'7B','}':'7D','|':'7C','\\\\':'5C',
-    '^':'5E','~':'7E','\\[':'5B','\\]':'5D','`':'60'
-};
-
 function encode_vars(dict){
     var ret = '';
 
@@ -58,7 +47,7 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
         'Post job, get it, delete and check deleted': function(){
             var vars = encode_vars({
                 'name': 'testing-on-url-calls',
-                'params': {something: 'some value', other_field: 'other thing'},
+                'params': {something: 'some value', other_field: 'other thing'}
                 });
 
             // Posts the new job
@@ -105,7 +94,7 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
         'Get next job': function(){
             var vars = encode_vars({
                 'name': 'testing-next-job',
-                'params': {something: 'some value', other_field: 'other thing'},
+                'params': {something: 'some value', other_field: 'other thing'}
                 });
 
             // Posts a new job
@@ -131,6 +120,7 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
                                     var job3 = JSON.parse(content3);
                                     assert.equal(job['_id'], job3['_id']);
 
+                                    // Requests job deletion
                                     var req4 = cl.request('GET', '/jobs/delete/?name='+job['name'], {}); req4.end();
                                     req4.on('response', function(resp4){
                                         assert.equal(resp4.statusCode, 200);
@@ -175,6 +165,7 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
                                     var job3 = JSON.parse(content3)[0];
                                     assert.equal(job3['status'], 'expired');
 
+                                    // Requests job deletion
                                     var req4 = cl.request('GET', '/jobs/delete/?name='+job['name'], {}); req4.end();
                                     req4.on('response', function(resp4){
                                         assert.equal(resp4.statusCode, 200);
@@ -223,6 +214,7 @@ vows.describe('Node.JobS HTTP URL methods').addBatch({
                                     assert.equal(job2['_id'], job3['_id']);
                                     assert.equal(job3['status'], 'failed');
 
+                                    // Requests job deletion
                                     var req4 = cl.request('GET', '/jobs/delete/?name='+job['name'], {}); req4.end();
                                     req4.on('response', function(resp4){
                                         assert.equal(resp4.statusCode, 200);
