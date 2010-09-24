@@ -17,13 +17,11 @@ vows.describe('Node.JobS WebSocket methods').addBatch({
                             // Requests job deletion
                                     // Gets the job again to check it has been deleted
                 });
-            cl.addListener('connect', function(){
-                cl.write(JSON.stringify({
-                    'method': 'post_job',
-                    'name': 'testing-on-websockets',
-                    'params': {something: 'some value', other_field: 'other thing'}
-                    }));
-                });
+            cl.write(JSON.stringify({
+                'method': 'post_job',
+                'name': 'testing-on-websockets',
+                'params': {something: 'some value', other_field: 'other thing'}
+                }));
             },
         'Get next job': function(){
             // Posts a new job
