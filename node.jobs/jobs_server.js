@@ -1,5 +1,5 @@
 var
- sys = require('sys'),
+ util = require('util'),
  fs = require('fs'),
  express = require('express'),
 
@@ -31,10 +31,9 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
     // Initializes store (probably on MongoDB connection)
     var store = base.Store(settings.store_backend, {db: settings.store_database});
     store.open(function(error, db){
-
         // Create application and set its middlewares
         var app = express.createServer();
-        app.use(express.bodyDecoder());
+        app.use(express.bodyParser());
         if (settings.output_log) app.use(express.logger());
 
         // VIEWS
@@ -116,9 +115,8 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
         app.get('/jobs/:id/update/', views.jobs_update); // FIXME: method should be post
         //app.del('/jobs/', views.jobs_delete);
 
-        app.listen(settings.port);
-
+        app.setMaxListeners(30);
+        app.listen(settings.service_port);
     });
-
 });
 

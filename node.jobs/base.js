@@ -1,6 +1,3 @@
-var
- sys = require('sys');
-
 var BACKENDS = {
     'mongodb': require('../node.jobs/backends/mongodb'),
     //'redis': require('../node.jobs/backends/redis')

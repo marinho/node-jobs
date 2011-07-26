@@ -1,8 +1,5 @@
 var
- sys = require('sys'),
-
- MongoDB = require('mongodb/db').Db,
- MongoServer = require('mongodb/connection').Server,
+ mongodb = require('mongodb'),
  ObjectID = require('mongodb/bson/bson').ObjectID,
 
  flags = require('../flags');
@@ -15,8 +12,8 @@ exports.Backend = function(settings){
         _settings: settings,
 
         open: function(callback){
-            var db = new MongoDB(this._settings.db, new MongoServer(this._settings.host, this._settings.port, {auto_reconnect: true}, {}));
-            db.open(callback);
+            var server = new mongodb.Server(this._settings.host, this._settings.port, {auto_reconnect: true});
+            new mongodb.Db(this._settings.db, server, {}).open(callback);
         },
 
         close: function(callback){

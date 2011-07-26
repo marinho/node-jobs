@@ -1,6 +1,3 @@
-var
- sys = require('sys');
-
 exports.JOB_STATUS_STANDING = 'standing'
 exports.JOB_STATUS_ASSIGNED = 'assigned'
 exports.JOB_STATUS_DONE = 'done'

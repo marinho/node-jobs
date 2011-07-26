@@ -1,5 +1,4 @@
 var
- sys = require('sys'),
  redis = require("redis-client");
 
 exports.Backend = function(settings){
