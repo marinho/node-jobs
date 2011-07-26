@@ -76,7 +76,7 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
 
             jobs_get_next: function(req, res){
                 store.get_next_job(db, req.query, function(error, jobs){
-                    if (jobs.length) res.send(JSON.stringify(jobs[0]));
+                    if (error != null && jobs.length) res.send(JSON.stringify(jobs[0]));
                     else res.send('null')
                 });
             },
@@ -115,7 +115,6 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
         app.get('/jobs/:id/update/', views.jobs_update); // FIXME: method should be post
         //app.del('/jobs/', views.jobs_delete);
 
-        app.setMaxListeners(30);
         app.listen(settings.service_port);
     });
 });
