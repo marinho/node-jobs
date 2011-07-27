@@ -76,7 +76,7 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
 
             jobs_get_next: function(req, res){
                 store.get_next_job(db, req.query, function(error, jobs){
-                    if (error != null && jobs.length) res.send(JSON.stringify(jobs[0]));
+                    if (jobs && jobs.length) res.send(JSON.stringify(jobs[0]));
                     else res.send('null')
                 });
             },
