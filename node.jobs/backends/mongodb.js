@@ -1,8 +1,8 @@
-var
+const
  mongodb = require('mongodb'),
- ObjectID = require('mongodb/bson/bson').ObjectID,
-
- flags = require('../flags');
+ ObjectID = require('bson-objectid'),
+ flags = require('../flags'),
+ MongoClient = require('mongodb').MongoClient;
 
 exports.Backend = function(settings){
     settings.port = settings.port !== undefined ? settings.port : 27017;
@@ -12,12 +12,25 @@ exports.Backend = function(settings){
         _settings: settings,
 
         open: function(callback){
-            var server = new mongodb.Server(this._settings.host, this._settings.port, {auto_reconnect: true});
-            new mongodb.Db(this._settings.db, server, {}).open(callback);
+            // var server = new mongodb.Server(this._settings.host, this._settings.port, {auto_reconnect: true});
+            // const client = new MongoClient(url);
+            // const connection = new mongodb.Db(this._settings.db, server, {});
+            // connection.connect(callback);
+            const url = `mongodb://${this._settings.host}:${this._settings.port}`;
+            const options = {
+                // reconnectTries : Number.MAX_VALUE,
+                // autoReconnect : true,
+                useUnifiedTopology: true // without this line, it's deprecated, but it's incompatible with autoReconnect
+            };
+            MongoClient.connect(
+                url,
+                options,
+                callback
+            );
         },
 
         close: function(callback){
-            //this.db.close();
+            //this.db.close(); // XXX why is this line commented?
             if (callback) callback();
         },
 

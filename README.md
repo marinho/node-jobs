@@ -52,3 +52,8 @@ set its host and port, and set the sender key too, if it has one.
 - Maybe a kiwi/npm installer
 - Make expiration work
 
+## Starting with Docker
+
+```
+docker run --name node-jobs-mongo -d mongo:tag
+```
