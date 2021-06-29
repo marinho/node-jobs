@@ -4,7 +4,8 @@
   "description": "Node.jobs is a really simple jobs server, based on Node.js, that workers and requesters can be the same and can be anonymous too.",
   "main": "index.js",
   "scripts": {
-    "start": "node ./node.jobs/jobs_server.js"
+    "start": "node ./node.jobs/jobs_server.js",
+    "build:docker": "docker build . -t marinho/node-jobs"
   },
   "repository": {
     "type": "git",

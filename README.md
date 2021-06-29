@@ -35,7 +35,7 @@ theirselves their jobs and returning results to senders.
 
 - Node.js
 - ExpressJS
-- mongo-db-native (or just "mongodb" on npm)
+- mongodb
 
 ## Python wrapper library
 
@@ -55,5 +55,13 @@ set its host and port, and set the sender key too, if it has one.
 ## Starting with Docker
 
 ```
-docker run --name node-jobs-mongo -d mongo:tag
+docker run --name node-jobs-mongo -d mongo:4.4.6
+docker run -p 3000:3000 -d marinho/node-jobs
+# TODO add port mapping for local MongoDB
+```
+
+To run bash shell
+
+```
+docker exec -it marinho/node-jobs bash
 ```
