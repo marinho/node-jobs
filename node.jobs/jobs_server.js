@@ -21,6 +21,7 @@ function read_settings(filename, callback) {
 const default_settings = {
     store_backend: 'mongodb',
     store_database: 'node_jobs',
+    store_settings: {},
     service_port: 3000,
     output_log: true
 }
@@ -31,7 +32,7 @@ read_settings('/etc/node.jobs/conf.json', function(error, file_settings){
     for (var k in default_settings) settings[k] = (settings[k] === undefined) ? default_settings[k] : settings[k];
 
     // Initializes store (probably on MongoDB connection)
-    var store = base.Store(settings.store_backend, {db: settings.store_database});
+    var store = base.Store(settings.store_backend, {...settings.store_settings, db: settings.store_database});
     store.open(function(error, db){
         // Create application and set its middlewares
         const app = express(); // .createServer();

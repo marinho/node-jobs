@@ -5,7 +5,12 @@
   "main": "index.js",
   "scripts": {
     "start": "node ./node.jobs/jobs_server.js",
-    "build:docker": "docker build . -t marinho/node-jobs"
+    "docker:build": "docker build . -t marinho/node-jobs",
+    "docker:clean": "docker stop node-jobs && docker rm node-jobs",
+    "docker:start": "docker run -p 3000:3000 -d --name node-jobs marinho/node-jobs",
+    "docker:stop": "docker stop node-jobs",
+    "docker:bash": "docker exec -it node-jobs bash",
+    "docker:logs": "docker logs node-jobs"
   },
   "repository": {
     "type": "git",

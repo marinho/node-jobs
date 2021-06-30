@@ -52,16 +52,23 @@ set its host and port, and set the sender key too, if it has one.
 - Maybe a kiwi/npm installer
 - Make expiration work
 
-## Starting with Docker
+## Using with Docker
 
 ```
-docker run --name node-jobs-mongo -d mongo:4.4.6
-docker run -p 3000:3000 -d marinho/node-jobs
-# TODO add port mapping for local MongoDB
+npm run docker:build
+# if there's already an instance of container "node-jobs":
+# npm run docker:clean
+npm run docker:start
 ```
 
 To run bash shell
 
 ```
-docker exec -it marinho/node-jobs bash
+npm run docker:bash
+```
+
+To see logs
+
+```
+npm run docker:logs
 ```
