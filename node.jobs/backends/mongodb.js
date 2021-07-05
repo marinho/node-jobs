@@ -103,19 +103,15 @@ exports.Backend = function(settings){
             this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
-                    collection.find(attrs, {'sort': 'when'}, function(error, cursor){
+                    const options = {'sort': 'when', 'limit': 1};
+                    collection.find(attrs, options, function(error, cursor){
                         if (error) callback(error)
                         else {
-                            cursor.limit(1, function(error, cursor){
+                            cursor.toArray(function(error, results){
                                 if (error) callback(error)
                                 else {
-                                    cursor.toArray(function(error, results){
-                                        if (error) callback(error)
-                                        else {
-                                            callback(null, results)
-                                            self.close();
-                                        }
-                                    });
+                                    callback(null, results)
+                                    self.close();
                                 }
                             });
                         }
