@@ -1,7 +1,7 @@
-var
- mongodb = require('mongodb'),
- ObjectID = require('mongodb/bson/bson').ObjectID,
-
+const
+ MongoClient = require('mongodb').MongoClient,
+ Server = require('mongodb').Server,
+ ObjectID = require('bson-objectid'),
  flags = require('../flags');
 
 exports.Backend = function(settings){
@@ -12,12 +12,24 @@ exports.Backend = function(settings){
         _settings: settings,
 
         open: function(callback){
-            var server = new mongodb.Server(this._settings.host, this._settings.port, {auto_reconnect: true});
-            new mongodb.Db(this._settings.db, server, {}).open(callback);
+            const options = {
+                // reconnectTries : Number.MAX_VALUE,
+                // autoReconnect : true,
+                useUnifiedTopology: true // without this line, it's deprecated, but it's incompatible with autoReconnect
+            };
+            const client = new MongoClient(new Server(this._settings.host, this._settings.port), options);
+            client.connect((error, cl) => {
+                if (error == null) {
+                    const db = cl.db(this._settings.db);
+                    callback(null, db);
+                } else {
+                    callback(error, null);
+                }
+            });
         },
 
         close: function(callback){
-            //this.db.close();
+            //this.db.close(); // XXX why is this line commented?
             if (callback) callback();
         },
 
@@ -91,19 +103,15 @@ exports.Backend = function(settings){
             this.get_collection(db, function(error, collection){
                 if (error) callback(error)
                 else {
-                    collection.find(attrs, {'sort': 'when'}, function(error, cursor){
+                    const options = {'sort': 'when', 'limit': 1};
+                    collection.find(attrs, options, function(error, cursor){
                         if (error) callback(error)
                         else {
-                            cursor.limit(1, function(error, cursor){
+                            cursor.toArray(function(error, results){
                                 if (error) callback(error)
                                 else {
-                                    cursor.toArray(function(error, results){
-                                        if (error) callback(error)
-                                        else {
-                                            callback(null, results)
-                                            self.close();
-                                        }
-                                    });
+                                    callback(null, results)
+                                    self.close();
                                 }
                             });
                         }

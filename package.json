@@ -1,0 +1,32 @@
+{
+  "name": "node-jobs",
+  "version": "1.0.0",
+  "description": "Node.jobs is a really simple jobs server, based on Node.js, that workers and requesters can be the same and can be anonymous too.",
+  "main": "index.js",
+  "scripts": {
+    "start": "node ./node.jobs/jobs_server.js",
+    "docker:build": "docker build . -t marinho/node-jobs",
+    "docker:clean": "docker stop node-jobs && docker rm node-jobs",
+    "docker:start": "docker run -p 3000:3000 -d --name node-jobs marinho/node-jobs",
+    "docker:stop": "docker stop node-jobs",
+    "docker:bash": "docker exec -it node-jobs bash",
+    "docker:logs": "docker logs node-jobs"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/marinho/node-jobs.git"
+  },
+  "author": "Marinho Brandao",
+  "license": "LGPL",
+  "bugs": {
+    "url": "https://github.com/marinho/node-jobs/issues"
+  },
+  "homepage": "https://github.com/marinho/node-jobs#readme",
+  "dependencies": {
+    "body-parser": "^1.19.0",
+    "bson-objectid": "^2.0.1",
+    "express": "^4.17.1",
+    "mongodb": "^3.6.9",
+    "morgan": "^1.10.0"
+  }
+}

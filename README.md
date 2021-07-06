@@ -35,7 +35,7 @@ theirselves their jobs and returning results to senders.
 
 - Node.js
 - ExpressJS
-- mongo-db-native (or just "mongodb" on npm)
+- mongodb
 
 ## Python wrapper library
 
@@ -52,3 +52,23 @@ set its host and port, and set the sender key too, if it has one.
 - Maybe a kiwi/npm installer
 - Make expiration work
 
+## Using with Docker
+
+```
+npm run docker:build
+# if there's already an instance of container "node-jobs":
+# npm run docker:clean
+npm run docker:start
+```
+
+To run bash shell
+
+```
+npm run docker:bash
+```
+
+To see logs
+
+```
+npm run docker:logs
+```
